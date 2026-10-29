@@ -1,0 +1,4 @@
+# One protected term per line: company and client names, people, internal hostnames, project code names.
+# Keep the real file OUT of the repo (it is itself sensitive). In CI, write it from a secret to a temp file.
+example-corp
+jane-example

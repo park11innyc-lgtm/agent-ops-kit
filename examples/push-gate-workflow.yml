@@ -1,0 +1,62 @@
+# Copy to .github/workflows/push-gate.yml in the repo you want to protect.
+# Agents push only to agent/* branches; this job scans every such push and deletes the branch on a BLOCK (exit 3).
+# Store your protected-terms list as the repository secret PUSH_GATE_TERMS (one term per line).
+# The gate and its settings are loaded from main, never from the pushed tree, and a push that touches the gate
+# or any workflow is blocked: a push still runs its own copy of THIS file, so also protect .github/workflows/**
+# with a ruleset or required workflow. Pin the actions below to commit SHAs in your copy.
+name: push-gate
+on:
+  push:
+    branches: ["agent/**"]
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    outputs:
+      rc: ${{ steps.gate.outputs.rc }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Scan the pushed range with the gate from main
+        id: gate
+        env:
+          TERMS: ${{ secrets.PUSH_GATE_TERMS }}
+          OLD: ${{ github.event.before }}
+          NEW: ${{ github.event.after }}
+          REF: ${{ github.ref }}
+        run: |
+          umask 077
+          git show origin/main:tools/push-gate/push_gate_v1.mjs > "$RUNNER_TEMP/push_gate_v1.mjs"
+          git show origin/main:tools/push-gate/settings_v1.json > "$RUNNER_TEMP/settings_v1.json"
+          f="$(mktemp)"; printf '%s\n' "$TERMS" > "$f"
+          set +e
+          PUSH_GATE_SETTINGS="$RUNNER_TEMP/settings_v1.json" PUSH_GATE_TERMS_FILE="$f" \
+            node "$RUNNER_TEMP/push_gate_v1.mjs" "$OLD" "$NEW" --ref "$REF" --base origin/main
+          rc=$?
+          rm -f "$f"
+          if [ "$rc" = 0 ] && git diff --name-only origin/main...$NEW | grep -qE '^(tools/push-gate/|\.github/workflows/)'; then
+            echo "PUSH GATE: BLOCK gate or workflow files changed (needs a human review)"; rc=3
+          fi
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          exit $rc
+  delete:
+    needs: scan
+    if: failure() && needs.scan.outputs.rc == '3' && startsWith(github.ref, 'refs/heads/agent/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete the blocked agent branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          enc="$(jq -rn --arg b "$BRANCH" '$b | split("/") | map(@uri) | join("/")')"
+          gh api -X DELETE "repos/$REPO/git/refs/heads/$enc"

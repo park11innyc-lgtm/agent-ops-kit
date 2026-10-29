@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "python3 ~/agent-ops-kit/hooks/gh_log_guard_v1.py"}]}
+    ],
+    "Stop": [
+      {"hooks": [
+        {"type": "command", "command": "python3 ~/agent-ops-kit/hooks/tab_guard_v1.py"},
+        {"type": "command", "command": "python3 ~/agent-ops-kit/hooks/mem_redact_v1.py"}
+      ]}
+    ],
+    "SessionStart": [
+      {"hooks": [{"type": "command", "command": "python3 ~/agent-ops-kit/tools/codex-review/session_hook_v1.py"}]}
+    ]
+  }
+}

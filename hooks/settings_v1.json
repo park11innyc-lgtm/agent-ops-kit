@@ -1,0 +1,15 @@
+{
+  "mem_redact": {
+    "mem_root": "~/.claude-mem",
+    "db_name": "claude-mem.db",
+    "state_file": "~/.agent-ops/state/mem_redact_state.json",
+    "secret_stores": [
+      "~/code/example-project/.env",
+      "~/.config/example/secrets.local.md",
+      "claude.json:example-mcp-server"
+    ],
+    "non_secret_line_pattern": "(folder|template file|dashboard|^- user:)",
+    "_stores_note": "Where your secrets live. *.md = a notes file (labelled or mixed letter+digit tokens of 20+ chars are taken); *.json = every credential-looking value; a file ending in 'token' = the whole file; anything else = KEY=value env file; claude.json:<server> = that MCP server's env in ~/.claude.json. Values are read, never printed.",
+    "min_keyed_secret_len": 8
+  }
+}

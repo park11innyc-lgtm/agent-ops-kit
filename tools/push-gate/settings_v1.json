@@ -1,0 +1,28 @@
+{
+  "terms_file": "~/.agent-ops/protected-terms.txt",
+  "default_base": "origin/main",
+  "term_word_boundary_max_len": 4,
+  "max_commits": 5000,
+  "key_exempt_dirs": [
+    "tools/push-gate/test/"
+  ],
+  "key_patterns": {
+    "anthropic_key": "sk-ant-[A-Za-z0-9_-]{20,}",
+    "openrouter_key": "sk-or-v1-[A-Za-z0-9_-]{20,}",
+    "openai_key": "sk-(proj-|svcacct-)?[A-Za-z0-9_-]{32,}",
+    "github_token": "gh[pousr]_[A-Za-z0-9]{36,}",
+    "github_pat": "github_[p]at_[A-Za-z0-9_]{60,}",
+    "slack_token": "xox[abpr]-[A-Za-z0-9-]{10,}",
+    "aws_key_id": "(?:AKIA|ASIA)[0-9A-Z]{16}",
+    "google_api_key": "AIza[0-9A-Za-z_-]{35}",
+    "stripe_live": "[sr]k_live_[A-Za-z0-9]{20,}",
+    "webhook_secret": "whsec_[A-Za-z0-9+/=_-]{20,}",
+    "resend_key": "re_[A-Za-z0-9_]{24,}",
+    "jwt": "eyJ[A-Za-z0-9_-]{15,}\\.eyJ[A-Za-z0-9_-]{15,}\\.[A-Za-z0-9_-]{10,}",
+    "private_key": "-----BEGIN [A-Z ]*PRIVATE KEY",
+    "postgres_url_password": "postgres(?:ql)?://[^\\s:/@]+:[^\\s@]{6,}@",
+    "chat_webhook_url": "/api/webhooks/\\d{17,20}/[A-Za-z0-9_-]{20,}"
+  },
+  "key_prefix_pattern": "(?:sk-|gh[pousr]_|github_[p]at_|xox[abpr]-|AKIA|ASIA|AIza|[sr]k_live_|whsec_|re_)",
+  "_patterns_note": "Bracketed letters such as github_[p]at_ match the same text; they keep the pattern source itself from tripping this gate."
+}

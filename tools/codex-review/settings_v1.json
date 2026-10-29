@@ -1,0 +1,58 @@
+{
+  "enabled": true,
+  "codex_bin": "codex",
+  "codex_home": null,
+  "reviews_dir": "~/.agent-ops/reviews",
+  "units_file": "~/.agent-ops/reviews/units_v1.json",
+  "projects": {
+    "example-project": [
+      "~/code/example-project"
+    ]
+  },
+  "secret_paths": [],
+  "max_reviews_per_day": 25,
+  "swap_pause_pct": null,
+  "timeout_sec": 900,
+  "post_to_github": false,
+  "github_min_severity": "medium",
+  "github_post_exclude": [],
+  "secret_patterns": [
+    "gh[pousr]_[A-Za-z0-9]{20,}",
+    "github_[p]at_[A-Za-z0-9_]{20,}",
+    "sk-[A-Za-z0-9_-]{20,}",
+    "sk-ant-[A-Za-z0-9_-]{20,}",
+    "xox[abpr]-[A-Za-z0-9-]{10,}",
+    "AIza[0-9A-Za-z_-]{30,}",
+    "AKIA[0-9A-Z]{16}",
+    "postgres(ql)?://[^\\s]+:[^\\s]+@",
+    "eyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,}",
+    "-----BEGIN [A-Z ]*PRIVATE KEY-----[\\s\\S]*?(?:-----END [A-Z ]*PRIVATE KEY-----|$)",
+    "[MN][A-Za-z0-9]{23,25}\\.[A-Za-z0-9_-]{6}\\.[A-Za-z0-9_-]{27,}"
+  ],
+  "exclude_globs": [
+    "node_modules",
+    ".venv",
+    "venv",
+    "*.bak*",
+    ".git",
+    "__pycache__",
+    "dist",
+    "build",
+    ".next",
+    "*.sqlite*",
+    "*.log",
+    "*.local.*"
+  ],
+  "pinned_checkouts": [],
+  "_pinned_checkouts_example": [
+    {
+      "path": "~/code/app-review",
+      "repo": "~/code/app",
+      "remote": "origin",
+      "ref": "main",
+      "note": "A detached linked worktree owned by the gate: fetched, force-checked-out to origin/main and cleaned before every review. Never point `path` at a checkout people work in."
+    }
+  ],
+  "_swap_note": "swap_pause_pct: null = never pause. A number defers reviews while macOS swap use is at or above it.",
+  "_patterns_note": "Bracketed letters such as github_[p]at_ match the same text; they keep the pattern source itself from tripping a leak scanner."
+}

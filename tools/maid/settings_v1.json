@@ -1,0 +1,71 @@
+{
+  "enabled": true,
+  "stale_branch_days": 30,
+  "stale_dated_name_days": 14,
+  "max_items_per_section": 40,
+  "skip_dirs": [
+    "archive",
+    "backups",
+    "node_modules",
+    ".git",
+    ".next",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "dist",
+    "build",
+    ".turbo",
+    "coverage",
+    "data",
+    "graphify-out",
+    "target",
+    ".anchor"
+  ],
+  "code_ext": [
+    ".py",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".gs",
+    ".sql",
+    ".sh"
+  ],
+  "stale_comment_patterns": [
+    "\\bTODO\\b",
+    "\\bFIXME\\b",
+    "\\bXXX\\b",
+    "\\bHACK\\b",
+    "\\btemporar(y|ily)\\b",
+    "remove (after|once|when)",
+    "\\bdeprecated\\b",
+    "\\blegacy\\b",
+    "no longer",
+    "\\bold (code|path|version)\\b"
+  ],
+  "skipped_test_patterns": [
+    "@pytest\\.mark\\.skip",
+    "pytest\\.skip\\(",
+    "@unittest\\.skip",
+    "\\b(it|test|describe)\\.(skip|todo)\\(",
+    "\\bx(it|describe)\\(",
+    "\\.only\\("
+  ],
+  "report_dir": "~/.agent-ops/reports/maid",
+  "state_dir": "~/.agent-ops/state/maid",
+  "targets": {
+    "example-project": [
+      "~/code/example-project"
+    ],
+    "agent-config": [
+      "~/.claude/skills",
+      "~/.claude/hooks"
+    ]
+  },
+  "memory_dirs": {
+    "example-project": "~/.claude/projects/<encoded-project-path>/memory"
+  },
+  "skip_projects": [],
+  "_note": "Report-first: the scan never deletes or edits. Every removal ships as one PR or one batch-approval list."
+}

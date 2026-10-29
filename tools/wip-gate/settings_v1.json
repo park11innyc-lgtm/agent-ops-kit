@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "enforce": false,
+  "wip_limit_default": 5,
+  "wip_limit": {"example-project": 5},
+  "repos": {"example-project": ["your-org/your-repo"]},
+  "count_drafts": false,
+  "exclude_approved": true,
+  "stale_after_min": 40,
+  "state_dir": "~/.agent-ops/wip-gate",
+  "codex_bot_login": "chatgpt-codex-connector",
+  "_enforce_note": "false = observe mode: print WARN and exit 0. true = exit 3 when a project is over its limit."
+}

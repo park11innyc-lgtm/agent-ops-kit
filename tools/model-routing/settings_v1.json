@@ -1,0 +1,216 @@
+{
+  "_note": "Two layers. (1) Delegation table: which model and effort an agent should spawn a sub-agent on, per task class (task_routes). (2) Lanes: route_v1.py sends one-shot tasks to an API lane under a PII reroute and a daily spend ceiling. Prices are USD per million tokens, examples only: verify them against your provider console before relying on the ceiling.",
+  "default_model": "sonnet",
+  "mechanical_model": "haiku",
+  "escalation_model": "opus",
+  "always_escalate": [
+    "architecture or spec design",
+    "debugging (first attempt too)",
+    "security-audit skill runs",
+    "code review and production code review",
+    "publish / sales-rail payload verification",
+    "conclusions that change money, payouts or auth",
+    "video, image, slide, design and any visual output or its review",
+    "writing and persuasive content",
+    "data analysis and finance logic",
+    "research synthesis",
+    "multi-file coding and refactors",
+    "computer-use and browser tasks",
+    "long agentic runs and orchestration"
+  ],
+  "always_mechanical": [
+    "db-sweep",
+    "web-sweep",
+    "bulk greps, listings, reformatting"
+  ],
+  "subagent_return_cap_words": 300,
+  "_precedence_note": "Verified 2026-10-17 (code.claude.com/docs/en/sub-agents): per-invocation model > agent frontmatter > CLAUDE_CODE_SUBAGENT_MODEL > main model, on Claude Code >= 2.1.251. Never set CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1: it overrides per-call model and silently breaks this routing table.",
+  "task_routes": {
+    "architecture_specs": {
+      "model": "opus",
+      "effort": "high",
+      "fable_if": "evals fall short at xhigh"
+    },
+    "debugging": {
+      "model": "opus",
+      "effort": "high"
+    },
+    "multi_file_code": {
+      "model": "opus",
+      "effort": "medium-high",
+      "fable_if": "multi-hour runs"
+    },
+    "security_and_code_review": {
+      "model": "opus",
+      "effort": "max"
+    },
+    "long_agentic": {
+      "model": "opus",
+      "effort": "xhigh",
+      "fable_if": "sessions of hours"
+    },
+    "visual_video_design": {
+      "model": "opus",
+      "effort": "high",
+      "note": "no video benchmark exists; Fable 5.1 for finished decks"
+    },
+    "writing": {
+      "model": "opus",
+      "effort": "high",
+      "note": "judgment call, no benchmark"
+    },
+    "data_finance": {
+      "model": "opus",
+      "effort": "high"
+    },
+    "research": {
+      "model": "opus",
+      "effort": "high",
+      "note": "low effort loses ~13 pts on DRACO"
+    },
+    "computer_use": {
+      "model": "opus",
+      "effort": "medium"
+    },
+    "mechanical": {
+      "model": "haiku",
+      "effort": "medium",
+      "only_if": "output is machine-checkable"
+    }
+  },
+  "lanes": {
+    "ledger_path": "~/.agent-ops/model-routing/route_calls_v1.jsonl",
+    "max_output_tokens": 4096,
+    "timeout_s": 120,
+    "kind_to_lane": {
+      "draft": "openrouter",
+      "summarize": "openrouter",
+      "classify": "openrouter",
+      "test-fill": "openrouter",
+      "review": "anthropic_api",
+      "research-digest": "openrouter",
+      "spec-critique": "anthropic_api",
+      "opus-review": "anthropic_api",
+      "pii": "anthropic_api",
+      "interactive": "plan",
+      "tools": "plan",
+      "secrets": "plan",
+      "local-only": "plan"
+    },
+    "default_kind": "plan",
+    "kind_keywords": {
+      "draft": [
+        "draft",
+        "write up",
+        "rewrite"
+      ],
+      "summarize": [
+        "summarize",
+        "summary",
+        "digest"
+      ],
+      "classify": [
+        "classify",
+        "label",
+        "categorize"
+      ],
+      "test-fill": [
+        "test-fill",
+        "write tests",
+        "fill tests"
+      ],
+      "review": [
+        "review"
+      ],
+      "spec-critique": [
+        "critique",
+        "spec"
+      ],
+      "local-only": [
+        "keychain",
+        "password",
+        "private key"
+      ]
+    },
+    "strong_kinds": [
+      "review",
+      "spec-critique",
+      "opus-review"
+    ],
+    "pii_reroute_lane": "anthropic_api",
+    "lanes": {
+      "openrouter": {
+        "daily_usd": 10,
+        "keychain_service": "agent-ops-openrouter",
+        "keychain_account": "agent-ops",
+        "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+        "default_model": "anthropic/claude-haiku-5.5",
+        "strong_model": "anthropic/claude-sonnet-5.5",
+        "prices_per_mtok": {
+          "anthropic/claude-haiku-5.5": [
+            0.1,
+            0.5
+          ],
+          "anthropic/claude-sonnet-5.5": [
+            2,
+            10
+          ],
+          "anthropic/claude-opus-5.5": [
+            4,
+            20
+          ]
+        },
+        "default_price_per_mtok": [
+          4,
+          20
+        ]
+      },
+      "anthropic_api": {
+        "daily_usd": 12,
+        "keychain_service": "agent-ops-anthropic-api",
+        "keychain_account": "agent-ops",
+        "endpoint": "https://api.anthropic.com/v1/messages",
+        "anthropic_version": "2023-06-01",
+        "default_model": "claude-sonnet-5-5",
+        "strong_model": "claude-opus-5-5",
+        "prices_per_mtok": {
+          "claude-haiku-5-5": [
+            0.1,
+            0.5
+          ],
+          "claude-sonnet-5-5": [
+            2,
+            10
+          ],
+          "claude-opus-5-5": [
+            4,
+            20
+          ]
+        },
+        "default_price_per_mtok": [
+          4,
+          20
+        ]
+      },
+      "plan": {
+        "daily_usd": 0
+      }
+    },
+    "pii_scanner": {
+      "_note": "Anything matching here never goes to the third-party lane; it is rerouted to pii_reroute_lane. Add your own private terms (client names, project code names) to terms.",
+      "regexes": {
+        "email": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
+        "phone": "(?<!\\d)(?:\\+?1[\\s.-]?)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}(?!\\d)",
+        "long_digit_id": "(?<!\\d)\\d{9,}(?!\\d)"
+      },
+      "terms": []
+    },
+    "local_only_patterns": [
+      "-----BEGIN [A-Z ]*PRIVATE KEY-----",
+      "\\bsk-[A-Za-z0-9_-]{20,}",
+      "\\bgh[pousr]_[A-Za-z0-9]{20,}",
+      "\\bAKIA[0-9A-Z]{16}\\b",
+      "(?i)\\b(password|passwd|pwd)\\s*[:=]\\s*\\S+"
+    ]
+  }
+}
